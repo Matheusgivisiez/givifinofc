@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 
 interface Transaction {
   id: string
@@ -110,6 +109,16 @@ export default function Dashboard() {
     })
     if (res.ok) {
       fetchProfile()
+    }
+  }
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setProfilePhotoUrl(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -267,27 +276,33 @@ export default function Dashboard() {
             <div className="mt-8 bg-blue-800 dark:bg-gray-800 shadow rounded-lg">
               <div className="px-4 py-5 sm:p-6">
                 <h2 className="text-lg font-medium text-white dark:text-gray-100 mb-4">Perfil</h2>
-                {profile.photoUrl && (
-                  <div className="mb-4">
-                    <Image src={profile.photoUrl} alt="Foto do perfil" width={128} height={128} className="rounded-full object-cover border-2 border-blue-500 dark:border-gray-500" />
+                {profilePhotoUrl && (
+                  <div className="mb-6">
+                    <p className="text-sm font-medium text-blue-200 dark:text-gray-300 mb-2">Foto Atual</p>
+                    <img 
+                      src={profilePhotoUrl} 
+                      alt="Foto do perfil" 
+                      className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 dark:border-gray-400" 
+                    />
                   </div>
                 )}
                 <form onSubmit={handleProfileSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-blue-200 dark:text-gray-300">Foto de Perfil</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="mt-1 block w-full text-blue-200 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white file:cursor-pointer hover:file:bg-blue-700"
+                    />
+                    <p className="mt-2 text-xs text-gray-400">Formatos suportados: JPG, PNG, GIF</p>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-blue-200 dark:text-gray-300">Nome</label>
                     <input
                       type="text"
                       value={profileName}
                       onChange={(e) => setProfileName(e.target.value)}
-                      className="mt-1 block w-full border-blue-600 dark:border-gray-600 rounded-md shadow-sm bg-blue-700 dark:bg-gray-700 text-white dark:text-gray-100 focus:ring-blue-500 dark:focus:ring-gray-500 focus:border-blue-500 dark:focus:border-gray-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-blue-200 dark:text-gray-300">URL da Foto</label>
-                    <input
-                      type="url"
-                      value={profilePhotoUrl}
-                      onChange={(e) => setProfilePhotoUrl(e.target.value)}
                       className="mt-1 block w-full border-blue-600 dark:border-gray-600 rounded-md shadow-sm bg-blue-700 dark:bg-gray-700 text-white dark:text-gray-100 focus:ring-blue-500 dark:focus:ring-gray-500 focus:border-blue-500 dark:focus:border-gray-500"
                     />
                   </div>
