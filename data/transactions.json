@@ -1,0 +1,30 @@
+[
+  {
+    "type": "income",
+    "amount": 233,
+    "description": "venda de material",
+    "date": "2026-04-18T05:38:00.666Z",
+    "id": "1776490680666"
+  },
+  {
+    "type": "expense",
+    "amount": 233,
+    "description": "energia",
+    "date": "2026-04-18T05:40:52.368Z",
+    "id": "1776490852369"
+  },
+  {
+    "type": "income",
+    "amount": 200,
+    "description": "vendi tenis",
+    "date": "2026-04-20T18:45:17.857Z",
+    "id": "8555d844-0dc9-4c3a-a4e0-c0ba4bf58503"
+  },
+  {
+    "type": "expense",
+    "amount": 30,
+    "description": "lanche",
+    "date": "2026-04-20T18:45:33.630Z",
+    "id": "1e915ee5-5ca7-4e6e-9b2d-b90a2d72bf8f"
+  }
+]
