@@ -26,5 +26,19 @@
     "description": "lanche",
     "date": "2026-04-20T18:45:33.630Z",
     "id": "1e915ee5-5ca7-4e6e-9b2d-b90a2d72bf8f"
+  },
+  {
+    "type": "income",
+    "amount": 12,
+    "description": "rrrrrr",
+    "date": "2026-04-20T19:47:07.104Z",
+    "id": "5280c1a7-6d92-48be-ac39-f73e9e5f4416"
+  },
+  {
+    "type": "expense",
+    "amount": 182,
+    "description": "fali",
+    "date": "2026-04-20T19:47:17.429Z",
+    "id": "1cd02e5f-23df-472f-9153-b3ae36c89b22"
   }
 ]
