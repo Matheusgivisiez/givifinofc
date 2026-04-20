@@ -59,6 +59,25 @@ export default function Login() {
     setSuccess('')
   }
 
+  const readApiMessage = async (response: Response, fallbackMessage: string) => {
+    const rawText = await response.text()
+
+    if (!rawText) {
+      return fallbackMessage
+    }
+
+    try {
+      const parsed = JSON.parse(rawText) as { error?: string; message?: string }
+      return parsed.error ?? parsed.message ?? fallbackMessage
+    } catch {
+      if (response.status >= 500) {
+        return `Erro interno do servidor (${response.status}).`
+      }
+
+      return rawText.slice(0, 160)
+    }
+  }
+
   const changeMode = (nextMode: AuthMode) => {
     setMode(nextMode)
     clearFeedback()
@@ -91,10 +110,9 @@ export default function Login() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         })
-        const data = await response.json().catch(() => ({}))
 
         if (!response.ok) {
-          setError(data.error ?? 'Nao foi possivel entrar.')
+          setError(await readApiMessage(response, 'Nao foi possivel entrar.'))
           return
         }
 
@@ -108,10 +126,9 @@ export default function Login() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password }),
         })
-        const data = await response.json().catch(() => ({}))
 
         if (!response.ok) {
-          setError(data.error ?? 'Nao foi possivel criar a conta.')
+          setError(await readApiMessage(response, 'Nao foi possivel criar a conta.'))
           return
         }
 
@@ -125,12 +142,13 @@ export default function Login() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
         })
-        const data = await response.json().catch(() => ({}))
 
         if (!response.ok) {
-          setError(data.error ?? 'Nao foi possivel gerar o codigo.')
+          setError(await readApiMessage(response, 'Nao foi possivel gerar o codigo.'))
           return
         }
+
+        const data = await response.json().catch(() => ({}))
 
         setPreviewCode(typeof data.previewCode === 'string' ? data.previewCode : '')
         setResetCode(typeof data.previewCode === 'string' ? data.previewCode : '')
@@ -144,12 +162,13 @@ export default function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: resetCode, password }),
       })
-      const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        setError(data.error ?? 'Nao foi possivel redefinir a senha.')
+        setError(await readApiMessage(response, 'Nao foi possivel redefinir a senha.'))
         return
       }
+
+      const data = await response.json().catch(() => ({}))
 
       setSuccess(data.message ?? 'Senha redefinida com sucesso.')
       setPassword('')
