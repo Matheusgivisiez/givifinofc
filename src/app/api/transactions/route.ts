@@ -1,36 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { getTransactions, addTransaction, getBalance, Transaction } from '@/lib/transactions'
+import { getAuthenticatedUserId } from '@/lib/auth'
+import { addTransaction, getBalance, getTransactions, Transaction } from '@/lib/transactions'
 
 export async function GET() {
   try {
-    const cookieStore = cookies()
-    const auth = cookieStore.get('auth')
+    const userId = getAuthenticatedUserId()
 
-    if (auth?.value !== 'loggedin') {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const transactions = await getTransactions()
-    const balance = await getBalance()
+    const transactions = await getTransactions(userId)
+    const balance = await getBalance(userId)
 
     return NextResponse.json({ transactions, balance })
   } catch (error) {
-    console.error('Error in GET /api/transactions:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const auth = cookieStore.get('auth')
+    const userId = getAuthenticatedUserId()
 
-    if (auth?.value !== 'loggedin') {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { type, amount, description }: Omit<Transaction, 'id' | 'date'> = await request.json()
+    const { type, amount, description }: Omit<Transaction, 'id' | 'date' | 'userId'> = await request.json()
 
     if (!type || amount === undefined || !description) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
@@ -41,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     const parsedAmount = Number(amount)
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    if (Number.isNaN(parsedAmount) || parsedAmount <= 0) {
       return NextResponse.json({ error: 'Amount must be a positive number' }, { status: 400 })
     }
 
@@ -50,6 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newTransaction = await addTransaction({
+      userId,
       type,
       amount: parsedAmount,
       description: description.trim(),
@@ -58,7 +56,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newTransaction)
   } catch (error) {
-    console.error('Error in POST /api/transactions:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

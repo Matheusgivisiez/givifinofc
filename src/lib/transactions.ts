@@ -1,74 +1,71 @@
-import { promises as fs } from 'fs'
-import path from 'path'
 import crypto from 'crypto'
-
-const dataDir = path.join(process.cwd(), 'data')
-const transactionsFile = path.join(dataDir, 'transactions.json')
-
-async function ensureTransactionsFile() {
-  try {
-    await fs.mkdir(dataDir, { recursive: true })
-    try {
-      await fs.access(transactionsFile)
-    } catch {
-      await fs.writeFile(transactionsFile, JSON.stringify([]))
-    }
-  } catch (error) {
-    console.error('Error initializing transactions file:', error)
-  }
-}
-
-// Initialize on module load
-ensureTransactionsFile().catch(console.error)
+import { db } from '@/lib/db'
 
 export interface Transaction {
   id: string
+  userId: string
   type: 'income' | 'expense'
   amount: number
   description: string
   date: string
 }
 
-export async function getTransactions(): Promise<Transaction[]> {
-  try {
-    await ensureTransactionsFile()
-    const data = await fs.readFile(transactionsFile, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    console.error('Error reading transactions:', error)
-    return []
-  }
+export async function getTransactions(userId: string): Promise<Transaction[]> {
+  const rows = db.prepare(`
+    SELECT id, user_id, type, amount, description, date
+    FROM transactions
+    WHERE user_id = ?
+    ORDER BY date DESC, rowid DESC
+  `).all(userId) as Array<{
+    id: string
+    user_id: string
+    type: 'income' | 'expense'
+    amount: number
+    description: string
+    date: string
+  }>
+
+  return rows.map((row) => ({
+    id: row.id,
+    userId: row.user_id,
+    type: row.type,
+    amount: row.amount,
+    description: row.description,
+    date: row.date,
+  }))
 }
 
 export async function addTransaction(transaction: Omit<Transaction, 'id'>): Promise<Transaction> {
-  try {
-    if (transaction.amount <= 0) {
-      throw new Error('Amount must be greater than 0')
-    }
-    
-    const transactions = await getTransactions()
-    const newTransaction: Transaction = {
-      ...transaction,
-      id: crypto.randomUUID(),
-    }
-    transactions.push(newTransaction)
-    await ensureTransactionsFile()
-    await fs.writeFile(transactionsFile, JSON.stringify(transactions, null, 2))
-    return newTransaction
-  } catch (error) {
-    console.error('Error adding transaction:', error)
-    throw error
+  if (transaction.amount <= 0) {
+    throw new Error('Amount must be greater than 0')
+  }
+
+  const id = crypto.randomUUID()
+
+  db.prepare(`
+    INSERT INTO transactions (id, user_id, type, amount, description, date)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(
+    id,
+    transaction.userId,
+    transaction.type,
+    transaction.amount,
+    transaction.description,
+    transaction.date,
+  )
+
+  return {
+    ...transaction,
+    id,
   }
 }
 
-export async function getBalance(): Promise<number> {
-  try {
-    const transactions = await getTransactions()
-    return transactions.reduce((balance, t) => {
-      return t.type === 'income' ? balance + t.amount : balance - t.amount
-    }, 0)
-  } catch (error) {
-    console.error('Error calculating balance:', error)
-    return 0
-  }
+export async function getBalance(userId: string): Promise<number> {
+  const row = db.prepare(`
+    SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END), 0) as balance
+    FROM transactions
+    WHERE user_id = ?
+  `).get(userId) as { balance: number }
+
+  return row.balance
 }

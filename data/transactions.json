@@ -40,5 +40,12 @@
     "description": "fali",
     "date": "2026-04-20T19:47:17.429Z",
     "id": "1cd02e5f-23df-472f-9153-b3ae36c89b22"
+  },
+  {
+    "type": "income",
+    "amount": 22,
+    "description": "ssss",
+    "date": "2026-04-20T20:21:29.088Z",
+    "id": "8ed855ae-0bc0-4880-9b29-19581333da71"
   }
 ]

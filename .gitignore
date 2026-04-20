@@ -34,3 +34,5 @@ Thumbs.db
 # Misc
 npm-debug.log
 .idea
+*.tsbuildinfo
+data/*.db

@@ -1,47 +1,25 @@
-import { promises as fs } from 'fs'
-import path from 'path'
-
-const dataDir = path.join(process.cwd(), 'data')
-const profileFile = path.join(dataDir, 'profile.json')
-
-async function ensureProfileFile() {
-  try {
-    await fs.mkdir(dataDir, { recursive: true })
-    try {
-      await fs.access(profileFile)
-    } catch {
-      await fs.writeFile(profileFile, JSON.stringify({ name: '', photoUrl: '' }))
-    }
-  } catch (error) {
-    console.error('Error initializing profile file:', error)
-  }
-}
-
-// Initialize on module load
-ensureProfileFile().catch(console.error)
+import { getUserById, updateUserProfile } from '@/lib/users'
 
 export interface Profile {
   name: string
+  email: string
   photoUrl: string
 }
 
-export async function getProfile(): Promise<Profile> {
-  try {
-    await ensureProfileFile()
-    const data = await fs.readFile(profileFile, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    console.error('Error reading profile:', error)
-    return { name: '', photoUrl: '' }
+export async function getProfile(userId: string): Promise<Profile> {
+  const user = getUserById(userId)
+
+  if (!user) {
+    throw new Error('Usuario nao encontrado.')
+  }
+
+  return {
+    name: user.name,
+    email: user.email,
+    photoUrl: user.photoUrl,
   }
 }
 
-export async function setProfile(profile: Profile): Promise<void> {
-  try {
-    await ensureProfileFile()
-    await fs.writeFile(profileFile, JSON.stringify(profile, null, 2))
-  } catch (error) {
-    console.error('Error writing profile:', error)
-    throw error
-  }
+export async function setProfile(userId: string, profile: Profile): Promise<Profile> {
+  return updateUserProfile(userId, profile)
 }
