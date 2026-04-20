@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid transaction type' }, { status: 400 })
     }
 
-    const parsedAmount = parseFloat(amount)
+    const parsedAmount = Number(amount)
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
       return NextResponse.json({ error: 'Amount must be a positive number' }, { status: 400 })
     }

@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface Transaction {
   id: string
@@ -31,6 +32,27 @@ export default function Dashboard() {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const router = useRouter()
 
+  const fetchData = useCallback(async () => {
+    const res = await fetch('/api/transactions')
+    if (res.ok) {
+      const data = await res.json()
+      setTransactions(data.transactions)
+      setBalance(data.balance)
+    } else {
+      router.push('/login')
+    }
+  }, [router])
+
+  const fetchProfile = useCallback(async () => {
+    const res = await fetch('/api/profile')
+    if (res.ok) {
+      const data = await res.json()
+      setProfile(data)
+      setProfileName(data.name)
+      setProfilePhotoUrl(data.photoUrl)
+    }
+  }, [])
+
   useEffect(() => {
     fetchData()
     fetchProfile()
@@ -42,7 +64,7 @@ export default function Dashboard() {
     } else {
       document.documentElement.classList.remove('dark')
     }
-  }, [])
+  }, [fetchData, fetchProfile])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -62,27 +84,6 @@ export default function Dashboard() {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
-    }
-  }
-
-  const fetchData = async () => {
-    const res = await fetch('/api/transactions')
-    if (res.ok) {
-      const data = await res.json()
-      setTransactions(data.transactions)
-      setBalance(data.balance)
-    } else {
-      router.push('/login')
-    }
-  }
-
-  const fetchProfile = async () => {
-    const res = await fetch('/api/profile')
-    if (res.ok) {
-      const data = await res.json()
-      setProfile(data)
-      setProfileName(data.name)
-      setProfilePhotoUrl(data.photoUrl)
     }
   }
 
@@ -268,7 +269,7 @@ export default function Dashboard() {
                 <h2 className="text-lg font-medium text-white dark:text-gray-100 mb-4">Perfil</h2>
                 {profile.photoUrl && (
                   <div className="mb-4">
-                    <img src={profile.photoUrl} alt="Foto do perfil" className="w-32 h-32 rounded-full object-cover border-2 border-blue-500 dark:border-gray-500" />
+                    <Image src={profile.photoUrl} alt="Foto do perfil" width={128} height={128} className="rounded-full object-cover border-2 border-blue-500 dark:border-gray-500" />
                   </div>
                 )}
                 <form onSubmit={handleProfileSubmit} className="space-y-4">
