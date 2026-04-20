@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { setAuthCookies } from '@/lib/auth'
 import { createUser } from '@/lib/users'
 
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const { name, email, password } = await request.json()

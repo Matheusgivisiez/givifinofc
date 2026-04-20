@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUserId } from '@/lib/auth'
 import { getProfile, setProfile } from '@/lib/profile'
 
+export const runtime = 'nodejs'
+
 export async function GET() {
   try {
     const userId = getAuthenticatedUserId()

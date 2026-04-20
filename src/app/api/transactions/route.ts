@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUserId } from '@/lib/auth'
 import { addTransaction, getBalance, getTransactions, Transaction } from '@/lib/transactions'
 
+export const runtime = 'nodejs'
+
 export async function GET() {
   try {
     const userId = getAuthenticatedUserId()

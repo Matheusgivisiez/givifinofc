@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requestPasswordReset } from '@/lib/users'
 
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json()
