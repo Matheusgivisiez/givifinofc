@@ -16,14 +16,14 @@ interface PasswordFieldProps {
 
 function PasswordField(props: PasswordFieldProps) {
   return (
-    <div className="flex border-b border-slate-600 bg-slate-800 last:border-b-0">
+    <div className="flex border-b border-emerald-500/20 bg-transparent last:border-b-0">
       <input
         id={props.id}
         name={props.id}
         type={props.visible ? 'text' : 'password'}
         required
         minLength={6}
-        className="block w-full bg-transparent px-4 py-3 text-white placeholder-slate-400 focus:outline-none sm:text-sm"
+        className="block w-full bg-transparent px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-0 sm:text-sm transition"
         placeholder={props.placeholder}
         value={props.value}
         onChange={(event) => props.onChange(event.target.value)}
@@ -31,7 +31,7 @@ function PasswordField(props: PasswordFieldProps) {
       <button
         type="button"
         onClick={props.onToggle}
-        className="border-l border-slate-600 px-4 text-sm font-medium text-slate-300 transition hover:text-white"
+        className="border-l border-emerald-500/20 px-4 text-sm font-medium text-emerald-300 transition hover:text-emerald-200"
       >
         {props.visible ? 'Ocultar' : 'Mostrar'}
       </button>
@@ -205,24 +205,34 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black px-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-emerald-900 to-slate-900 px-4">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-emerald-500/5 blur-3xl"></div>
+      </div>
+
+      <div className="relative w-full max-w-md space-y-8">
         {(mode === 'login' || mode === 'register') && (
-          <div className="mx-auto flex w-full max-w-xs rounded-xl border border-slate-700 bg-slate-900/80 p-1">
+          <div className="mx-auto flex w-full max-w-xs rounded-xl border border-emerald-500/30 bg-emerald-900/20 p-1 backdrop-blur-sm">
             <button
               type="button"
               onClick={() => changeMode('login')}
               className={`w-1/2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                mode === 'login' ? 'bg-slate-700 text-white' : 'text-slate-300 hover:text-white'
+                mode === 'login' 
+                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/50' 
+                  : 'text-slate-300 hover:text-emerald-300'
               }`}
             >
-              Login
+              Entrar
             </button>
             <button
               type="button"
               onClick={() => changeMode('register')}
               className={`w-1/2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                mode === 'register' ? 'bg-slate-700 text-white' : 'text-slate-300 hover:text-white'
+                mode === 'register' 
+                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/50' 
+                  : 'text-slate-300 hover:text-emerald-300'
               }`}
             >
               Cadastro
@@ -235,20 +245,33 @@ export default function Login() {
             <button
               type="button"
               onClick={() => changeMode('login')}
-              className="text-sm font-medium text-slate-300 underline underline-offset-4 transition hover:text-white"
+              className="text-sm font-medium text-emerald-300 underline underline-offset-4 transition hover:text-emerald-200"
             >
-              Voltar para login
+              ← Voltar para login
             </button>
           </div>
         )}
 
-        <div className="space-y-3">
-          <h2 className="text-center text-3xl font-extrabold text-white">{titleByMode[mode]}</h2>
-          <p className="text-center text-sm text-slate-400">{descriptionByMode[mode]}</p>
+        {/* Logo */}
+        <div className="text-center space-y-2 pt-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-white">Givifin</p>
+            <p className="text-xs text-emerald-300">Gestão Financeira Inteligente</p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <h2 className="text-center text-2xl font-bold text-white">{titleByMode[mode]}</h2>
+          <p className="text-center text-sm text-emerald-100/70">{descriptionByMode[mode]}</p>
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="overflow-hidden rounded-md border border-slate-600 shadow-sm">
+          <div className="overflow-hidden rounded-lg border border-emerald-500/30 bg-slate-800/40 shadow-lg shadow-emerald-500/10 backdrop-blur-sm">
             {mode === 'register' && (
               <input
                 id="name"
@@ -256,7 +279,7 @@ export default function Login() {
                 type="text"
                 required
                 minLength={2}
-                className="block w-full border-b border-slate-600 bg-slate-800 px-4 py-3 text-white placeholder-slate-400 focus:outline-none sm:text-sm"
+                className="block w-full border-b border-emerald-500/20 bg-transparent px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500/50 focus:ring-0 sm:text-sm transition"
                 placeholder="Nome completo"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
@@ -268,8 +291,8 @@ export default function Login() {
               name="email"
               type="email"
               required
-              className={`block w-full bg-slate-800 px-4 py-3 text-white placeholder-slate-400 focus:outline-none sm:text-sm ${
-                mode === 'requestReset' ? '' : 'border-b border-slate-600'
+              className={`block w-full bg-transparent px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-0 focus:border-emerald-500/50 sm:text-sm transition ${
+                mode === 'requestReset' ? '' : 'border-b border-emerald-500/20'
               }`}
               placeholder="Email"
               value={email}
@@ -284,7 +307,7 @@ export default function Login() {
                 required
                 minLength={6}
                 maxLength={6}
-                className="block w-full border-b border-slate-600 bg-slate-800 px-4 py-3 text-white placeholder-slate-400 focus:outline-none sm:text-sm"
+                className="block w-full border-b border-emerald-500/20 bg-transparent px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500/50 focus:ring-0 sm:text-sm transition"
                 placeholder="Codigo de 6 digitos"
                 value={resetCode}
                 onChange={(event) => setResetCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -315,37 +338,38 @@ export default function Login() {
           </div>
 
           {previewCode && mode === 'resetPassword' && (
-            <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+            <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200 backdrop-blur-sm">
               Codigo de demonstracao: <span className="font-semibold tracking-[0.3em]">{previewCode}</span>
             </div>
           )}
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          {success && <p className="text-sm text-emerald-400">{success}</p>}
+          {error && <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300 backdrop-blur-sm">{error}</p>}
+          {success && <p className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300 backdrop-blur-sm">{success}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full justify-center rounded-md bg-slate-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-black disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex w-full justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:from-emerald-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-70 shadow-lg shadow-emerald-500/30"
           >
             {loading ? 'Carregando...' : buttonLabelByMode[mode]}
           </button>
 
           {mode === 'login' && (
-            <div className="flex items-center justify-between gap-4 text-sm text-slate-400">
-              <button
-                type="button"
-                onClick={() => changeMode('register')}
-                className="font-medium text-white underline underline-offset-4"
-              >
-                Criar conta
-              </button>
+            <div className="flex flex-col items-center justify-center gap-3 text-sm text-slate-400">
               <button
                 type="button"
                 onClick={() => changeMode('requestReset')}
-                className="font-medium text-white underline underline-offset-4"
+                className="font-medium text-emerald-300 hover:text-emerald-200 underline underline-offset-4 transition"
               >
                 Esqueci minha senha
+              </button>
+              <p className="text-slate-500">ou</p>
+              <button
+                type="button"
+                onClick={() => changeMode('register')}
+                className="font-medium text-emerald-300 hover:text-emerald-200 underline underline-offset-4 transition"
+              >
+                Criar nova conta
               </button>
             </div>
           )}
@@ -356,7 +380,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => changeMode('login')}
-                className="font-medium text-white underline underline-offset-4"
+                className="font-medium text-emerald-300 hover:text-emerald-200 underline underline-offset-4 transition"
               >
                 Fazer login
               </button>
@@ -364,6 +388,11 @@ export default function Login() {
           )}
         </form>
       </div>
+
+      {/* Footer */}
+      <p className="absolute bottom-6 text-center text-xs text-slate-400 w-full">
+        © 2024 Givifin. Todos os direitos reservados.
+      </p>
     </div>
   )
 }
