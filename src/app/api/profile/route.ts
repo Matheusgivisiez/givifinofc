@@ -4,7 +4,7 @@ import { getProfile, setProfile } from '@/lib/profile'
 
 export const runtime = 'nodejs'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const userId = getAuthenticatedUserId()
 

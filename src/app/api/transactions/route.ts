@@ -4,7 +4,7 @@ import { addTransaction, getBalance, getTransactions, Transaction } from '@/lib/
 
 export const runtime = 'nodejs'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const userId = getAuthenticatedUserId()
 
